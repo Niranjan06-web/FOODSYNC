@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodSync | Food Donation</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.donation-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+}
+.donation-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+.donation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+.donation-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 25px;
+    transition: 0.3s;
+}
+.donation-card:hover {
+    transform: translateY(-6px);
+}
+.food-icon {
+    font-size: 38px;
+}
+.donation-card h2 {
+    margin: 12px 0;
+}
+.donation-card p {
+    margin: 8px 0;
+}
+.available {
+    color: #6ee7a8;
+    font-weight: bold;
+}
+.empty-message {
+    text-align: center;
+    padding: 30px;
+}
+.donation-footer {
+    text-align: center;
+    margin-top: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="index.html">🍃 FoodSync</a>
+    <div class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="mess-menu.html">Mess Menu 🍽️</a>
+        <a href="analytics.html">Analytics 📊</a>
+        <a href="feedback.html">Feedback ⭐</a>
+    </div>
+</nav>
+
+<main class="donation-container">
+
+    <div class="donation-heading">
+        <span class="tag">SHARE MORE, WASTE LESS</span>
+        <h1>🤝 Food Donation Center</h1>
+        <p>Available surplus food from the FoodSync Dashboard.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p>🍱 Total Surplus Meals</p>
+            <h2 id="totalDonation">0</h2>
+        </div>
+        <div class="stat-card highlight">
+            <p>🌱 Available Food Items</p>
+            <h2 id="foodCount">0</h2>
+        </div>
+    </div>
+
+    <section class="dash-section">
+        <h2>Available Food Donations</h2>
+        <div class="donation-grid" id="donationList"></div>
+        <p id="emptyMessage" class="empty-message"></p>
+    </section>
+
+    <div class="donation-footer">
+        <p>🌍 FoodSync | Every Meal Matters</p>
+        <p>Reduce Food Waste, Share More.</p>
+    </div>
+
+</main>
+
+<script>
+function loadDonations() {
+
+    const foods = JSON.parse(localStorage.getItem("foodItems")) || [];
+
+    const list = document.getElementById("donationList");
+    const empty = document.getElementById("emptyMessage");
+
+    list.innerHTML = "";
+
+    let total = 0;
+    let count = 0;
+
+    foods.forEach(food => {
+
+        const surplus = food.prepared - food.sold;
+
+        if (surplus <= 0) return;
+
+        total += surplus;
+        count++;
+
+        const card = document.createElement("div");
+        card.className = "donation-card";
+
+        const icon = document.createElement("div");
+        icon.className = "food-icon";
+        icon.textContent = "🍱";
+
+        const heading = document.createElement("h2");
+        heading.textContent = food.name;
+
+        const quantity = document.createElement("p");
+        quantity.textContent = "Available meals: " + surplus;
+
+        const status = document.createElement("p");
+        status.className = "available";
+        status.textContent = "● Available for donation";
+
+        card.append(icon, heading, quantity, status);
+        list.appendChild(card);
+    });
+
+    document.getElementById("totalDonation").textContent = total;
+    document.getElementById("foodCount").textContent = count;
+
+    empty.textContent = count === 0
+        ? "No surplus food available right now. Check the Dashboard!"
+        : "Thank you for helping reduce food waste! 🌱";
+}
+
+loadDonations();
+</script>
+
+</body>
+</html>
