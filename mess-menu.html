@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodSync | Weekly Mess Menu</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.menu-page {
+    max-width: 1150px;
+    margin: auto;
+    padding: 55px 6%;
+}
+
+.menu-heading {
+    text-align: center;
+    margin-bottom: 35px;
+    animation: slideUp .7s ease;
+}
+
+.menu-heading h1 {
+    font-size: 42px;
+    margin: 15px 0;
+}
+
+.menu-heading h1 span {
+    color: var(--green);
+}
+
+.menu-heading p {
+    color: var(--muted);
+}
+
+.today-label {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 9px 17px;
+    border-radius: 30px;
+    color: var(--green);
+    background: #35e69a18;
+    border: 1px solid #35e69a55;
+    font-size: 12px;
+}
+
+.day-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 35px 0;
+}
+
+.day-buttons button {
+    background: #10221b;
+    color: var(--muted);
+    border: 1px solid #ffffff20;
+    padding: 12px 19px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+.day-buttons button:hover,
+.day-buttons button.active {
+    background: var(--green);
+    color: #07110e;
+    border-color: var(--green);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.meal-card {
+    padding: 28px;
+    background: linear-gradient(145deg, #142b21, #0b1913);
+    border: 1px solid #ffffff20;
+    border-radius: 18px;
+    animation: slideUp .5s ease both;
+    transition: .3s;
+}
+
+.meal-card:hover {
+    transform: translateY(-7px);
+    border-color: var(--green);
+}
+
+.meal-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+.meal-card h2 {
+    color: var(--green);
+    font-size: 21px;
+    margin-bottom: 15px;
+}
+
+.meal-card p {
+    color: var(--muted);
+    line-height: 1.9;
+}
+
+.menu-note {
+    margin-top: 35px;
+    padding: 23px;
+    background: #35e69a10;
+    border: 1px solid #35e69a33;
+    border-radius: 15px;
+    text-align: center;
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+.menu-note strong {
+    color: var(--green);
+}
+
+@media(max-width: 750px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-heading h1 {
+        font-size: 32px;
+    }
+
+    .day-buttons button {
+        padding: 10px 13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo">🍃 FoodSync</a>
+    <div class="navlinks">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="index.html">Home</a>
+    </div>
+</nav>
+
+<main class="menu-page">
+
+    <header class="menu-heading">
+        <span class="tag">🍽️ CAMPUS DINING</span>
+        <h1>Weekly <span>Mess Menu</span></h1>
+        <p>Good food. Better planning. Less food waste.</p>
+        <div class="today-label" id="todayLabel">
+            Loading today's menu...
+        </div>
+    </header>
+
+    <div class="day-buttons" id="dayButtons"></div>
+
+    <div class="menu-grid" id="menuGrid"></div>
+
+    <div class="menu-note">
+        <strong>🌱 FoodSync Mission</strong>
+        <p>Plan meals smarter, reduce surplus and make every meal count.</p>
+        <p><small>Illustrative weekly menu for prototype demonstration.</small></p>
+    </div>
+
+</main>
+
+<footer>
+    © 2026 FoodSync | Reduce Waste, Share More 🌱
+</footer>
+
+<script>
+const menu = {
+    Monday: [
+        ["🌅", "Breakfast", "Idli, Sambar, Coconut Chutney"],
+        ["☀️", "Lunch", "Rice, Sambar, Potato Poriyal, Curd"],
+        ["🌙", "Dinner", "Chapati, Vegetable Kurma"]
+    ],
+    Tuesday: [
+        ["🌅", "Breakfast", "Dosa, Tomato Chutney, Sambar"],
+        ["☀️", "Lunch", "Vegetable Rice, Raita, Appalam"],
+        ["🌙", "Dinner", "Chapati, Channa Masala"]
+    ],
+    Wednesday: [
+        ["🌅", "Breakfast", "Pongal, Vada, Chutney"],
+        ["☀️", "Lunch", "Rice, Rasam, Beans Poriyal, Curd"],
+        ["🌙", "Dinner", "Idiyappam, Vegetable Kurma"]
+    ],
+    Thursday: [
+        ["🌅", "Breakfast", "Poori, Potato Masala"],
+        ["☀️", "Lunch", "Lemon Rice, Sambar, Curd"],
+        ["🌙", "Dinner", "Dosa, Vegetable Sambar"]
+    ],
+    Friday: [
+        ["🌅", "Breakfast", "Upma, Chutney, Banana"],
+        ["☀️", "Lunch", "Rice, Dal, Vegetable Curry, Curd"],
+        ["🌙", "Dinner", "Veg Fried Rice, Gobi Manchurian"]
+    ],
+    Saturday: [
+        ["🌅", "Breakfast", "Puttu, Kadala Curry"],
+        ["☀️", "Lunch", "Veg Biryani, Onion Raita"],
+        ["🌙", "Dinner", "Chapati, Paneer Masala"]
+    ],
+    Sunday: [
+        ["🌅", "Breakfast", "Masala Dosa, Sambar"],
+        ["☀️", "Lunch", "Special Veg Meals, Payasam"],
+        ["🌙", "Dinner", "Parotta, Vegetable Kurma"]
+    ]
+};
+
+const days = Object.keys(menu);
+
+const today = new Date().getDay();
+const todayName = days[(today + 6) % 7];
+
+let selectedDay = todayName;
+
+const buttons = document.getElementById("dayButtons");
+const grid = document.getElementById("menuGrid");
+
+document.getElementById("todayLabel").innerText =
+    "📅 Today's Menu: " + todayName;
+
+function displayMenu(day) {
+    selectedDay = day;
+
+    buttons.innerHTML = "";
+
+    days.forEach(function(name) {
+        let button = document.createElement("button");
+
+        button.innerText = name;
+
+        if (name === selectedDay) {
+            button.classList.add("active");
+        }
+
+        button.onclick = function() {
+            displayMenu(name);
+        };
+
+        buttons.appendChild(button);
+    });
+
+    grid.innerHTML = "";
+
+    menu[day].forEach(function(meal, index) {
+        let card = document.createElement("div");
+        card.className = "meal-card";
+        card.style.animationDelay = (index * 0.12) + "s";
+
+        let icon = document.createElement("div");
+        icon.className = "meal-icon";
+        icon.innerText = meal[0];
+
+        let heading = document.createElement("h2");
+        heading.innerText = meal[1];
+
+        let description = document.createElement("p");
+        description.innerText = meal[2];
+
+        card.append(icon, heading, description);
+        grid.appendChild(card);
+    });
+}
+
+displayMenu(todayName);
+</script>
+
+</body>
+</html>

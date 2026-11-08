@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodSync | Student Feedback</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.feedback-container {
+    max-width: 850px;
+    margin: 50px auto;
+    padding: 20px;
+}
+.feedback-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.feedback-card {
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+.feedback-card input,
+.feedback-card select,
+.feedback-card textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0 20px;
+    border-radius: 10px;
+    border: 1px solid #416b58;
+    background: #102b20;
+    color: white;
+}
+.feedback-card textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+.feedback-card label {
+    display: block;
+    font-weight: bold;
+    margin-top: 12px;
+}
+.stars {
+    display: flex;
+    gap: 10px;
+    margin: 12px 0 20px;
+}
+.stars button {
+    font-size: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #777;
+}
+.stars button.active {
+    color: #ffc94a;
+}
+.feedback-entry {
+    background: rgba(255,255,255,0.06);
+    padding: 18px;
+    margin: 12px 0;
+    border-radius: 12px;
+}
+.feedback-entry h3 {
+    margin-bottom: 8px;
+}
+#feedbackMessage {
+    margin: 15px 0;
+    color: #6ee7a8;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="index.html">🍃 FoodSync</a>
+    <div class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="mess-menu.html">Mess Menu 🍽️</a>
+        <a href="donation.html">Food Donation 🌱</a>
+        <a href="analytics.html">Analytics 📊</a>
+    </div>
+</nav>
+
+<main class="feedback-container">
+
+    <div class="feedback-heading">
+        <span class="tag">YOUR VOICE MATTERS</span>
+        <h1>⭐ Student Feedback</h1>
+        <p>Help us improve campus food quality and service.</p>
+    </div>
+
+    <section class="feedback-card">
+
+        <form id="feedbackForm">
+
+            <label for="studentName">Student Name</label>
+            <input type="text" id="studentName"
+                   placeholder="Enter your name" required maxlength="60">
+
+            <label for="meal">Select Meal</label>
+            <select id="meal" required>
+                <option value="">Choose meal</option>
+                <option>Breakfast</option>
+                <option>Lunch</option>
+                <option>Snacks</option>
+                <option>Dinner</option>
+            </select>
+
+            <label>Food Rating</label>
+            <div class="stars" id="starRating">
+                <button type="button" data-rating="1" aria-label="1 star">★</button>
+                <button type="button" data-rating="2" aria-label="2 stars">★</button>
+                <button type="button" data-rating="3" aria-label="3 stars">★</button>
+                <button type="button" data-rating="4" aria-label="4 stars">★</button>
+                <button type="button" data-rating="5" aria-label="5 stars">★</button>
+            </div>
+
+            <label for="cleanliness">Mess Cleanliness</label>
+            <select id="cleanliness" required>
+                <option value="">Select cleanliness</option>
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Average</option>
+                <option>Needs Improvement</option>
+            </select>
+
+            <label for="suggestions">Suggestions</label>
+            <textarea id="suggestions"
+                placeholder="Share your suggestions..."
+                maxlength="500"></textarea>
+
+            <button type="submit" class="btn">Submit Feedback</button>
+
+            <p id="feedbackMessage" role="status"></p>
+
+        </form>
+
+    </section>
+
+    <section class="dash-section">
+        <h2>📋 Saved Feedback</h2>
+        <p id="feedbackCount">Total Responses: 0</p>
+        <div id="feedbackHistory"></div>
+    </section>
+
+    <footer>FoodSync | Your Feedback Creates Change 🌱</footer>
+
+</main>
+
+<script>
+let selectedRating = 0;
+
+const starButtons = document.querySelectorAll("#starRating button");
+
+starButtons.forEach(button => {
+    button.addEventListener("click", function() {
+        selectedRating = Number(this.dataset.rating);
+
+        starButtons.forEach(star => {
+            star.classList.toggle(
+                "active",
+                Number(star.dataset.rating) <= selectedRating
+            );
+        });
+    });
+});
+
+function displayFeedback() {
+
+    const feedbacks =
+        JSON.parse(localStorage.getItem("studentFeedback")) || [];
+
+    const history = document.getElementById("feedbackHistory");
+
+    history.innerHTML = "";
+
+    document.getElementById("feedbackCount").textContent =
+        "Total Responses: " + feedbacks.length;
+
+    if (feedbacks.length === 0) {
+        history.textContent = "No feedback submitted yet.";
+        return;
+    }
+
+    feedbacks.slice().reverse().forEach(item => {
+
+        const card = document.createElement("div");
+        card.className = "feedback-entry";
+
+        const heading = document.createElement("h3");
+        heading.textContent = item.name + " · " + item.meal;
+
+        const rating = document.createElement("p");
+        rating.textContent = "Rating: " + "★".repeat(item.rating);
+
+        const cleanliness = document.createElement("p");
+        cleanliness.textContent = "Cleanliness: " + item.cleanliness;
+
+        const suggestion = document.createElement("p");
+        suggestion.textContent =
+            "Suggestion: " + (item.suggestion || "No suggestion");
+
+        card.append(heading, rating, cleanliness, suggestion);
+        history.appendChild(card);
+    });
+}
+
+document.getElementById("feedbackForm").addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    if (selectedRating === 0) {
+        document.getElementById("feedbackMessage").textContent =
+            "Please select a star rating.";
+        return;
+    }
+
+    const feedback = {
+        name: document.getElementById("studentName").value.trim(),
+        meal: document.getElementById("meal").value,
+        rating: selectedRating,
+        cleanliness: document.getElementById("cleanliness").value,
+        suggestion: document.getElementById("suggestions").value.trim()
+    };
+
+    if (!feedback.name) {
+        document.getElementById("feedbackMessage").textContent =
+            "Please enter your name.";
+        return;
+    }
+
+    const feedbacks =
+        JSON.parse(localStorage.getItem("studentFeedback")) || [];
+
+    feedbacks.push(feedback);
+
+    localStorage.setItem("studentFeedback", JSON.stringify(feedbacks));
+
+    document.getElementById("feedbackMessage").textContent =
+        "Feedback submitted successfully! Thank you. 🌱";
+
+    this.reset();
+    selectedRating = 0;
+
+    starButtons.forEach(star => star.classList.remove("active"));
+
+    displayFeedback();
+});
+
+displayFeedback();
+</script>
+
+</body>
+</html>
